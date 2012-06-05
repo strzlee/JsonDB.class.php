@@ -131,11 +131,7 @@ class JsonTable {
 			}
 			if ($result) {
 				sort($data);
-<<<<<<< HEAD
-				$this->writeFile($data);
-=======
 				$this->fileData = $data;
->>>>>>> JsonDB Version 1.0b
 			}
 		}
 		return $result;
