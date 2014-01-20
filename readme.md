@@ -1,3 +1,19 @@
+This is a fork of Straussn's JSON-Databaseclass.
+- Added createTable() method for creating new tables (.json files)
+- Added optional table creation on insert() method, if table doesn't exist.
+
+Use it like this:
+
+    $db = new JsonDB("./my_json_database/");
+
+    $db->createTable("my_new_table");
+    
+    $db->insert("my_new__new_table", array("newkey2" => "newvalue2"), true);
+
+    $my_another_new_table = new JsonTable("./string_statuses/demo14.json", true);
+    $my_another_new_table->insert(array("newkey2" => "newvalue2"));
+
+
 # Straussn's JSON-Databaseclass #
 
 *Handle JSON-Files like a very, very simple DB. Useful for little ajax applications.*
