@@ -21,13 +21,16 @@
 		
 		Method Overview:
 		
+			new JsonDB(".(path_to_my_jsonfiles/");
+			JsonDB -> createTable("hello_world_table");
 			JsonDB -> select ( "table", "key", "value" ) - Selects multible lines which contains the key/value and returns it as array
 			JsonDB -> selectAll ( "table" )  - Returns the entire file as array
 			JsonDB -> update ( "table", "key", "value", ARRAY ) - Replaces the line which corresponds to the key/value with the array-data
 			JsonDB -> updateAll ( "table", ARRAY ) - Replaces the entire file with the array-data
-			JsonDB -> insert ( "table", ARRAY ) - Appends a row, returns true on success
+			JsonDB -> insert ( "table", ARRAY , $create = FALSE) - Appends a row, returns true on success. if $create is TRUE, we will create the table if it doesn't already exist.
 			JsonDB -> delete ( "table", "key", "value" ) - Deletes all lines which corresponds to the key/value, returns number of deleted lines
 			JsonDB -> deleteAll ( "table" ) - Deletes the whole data, returns "true" on success
+			new JsonTable("./data/test.json", $create = FALSE) - If $create is TRUE, creates table if it doesn't exist.
 */
 
 class JsonTable {
@@ -36,13 +39,21 @@ class JsonTable {
 	protected $fileHandle;
 	protected $fileData = array();
 	
-	public function __construct($_jsonFile) {
-		if (file_exists($_jsonFile)) {
-			$this->jsonFile = $_jsonFile;
-			$this->fileData = json_decode(file_get_contents($this->jsonFile), true);
-			$this->lockFile();
+	public function __construct($_jsonFile, $create = false) {
+		if (!file_exists($_jsonFile)) {
+			if($create === true)
+			{
+				$this->createTable($_jsonFile, true);
+			}
+			else
+			{
+				throw new Exception("JsonTable Error: Table not found: ".$_jsonFile);
+			}
 		}
-		else throw new Exception("JsonTable Error: File not found: ".$_jsonFile);
+
+		$this->jsonFile = $_jsonFile;
+		$this->fileData = json_decode(file_get_contents($this->jsonFile), true);
+		$this->lockFile();
 	}
 	
 	public function __destruct() {
@@ -105,7 +116,7 @@ class JsonTable {
 		return $result;
 	}
 	
-	public function insert($data = array()) {
+	public function insert($data = array(), $create = false) {
 		if (isset($data[0]) && substr_compare($data[0],$this->jsonFile,0)) $data = $data[1];
 		$this->fileData[] = $data;
 		return true;
@@ -135,6 +146,21 @@ class JsonTable {
 			}
 		}
 		return $result;
+	}
+
+	public function createTable($tablePath) {
+		if(is_array($tablePath)) $tablePath = $tablePath[0];
+		if(file_exists($tablePath))
+			throw new Exception("Table already exists: ".$tablePath);
+
+		if(fclose(fopen($tablePath, 'a')))
+		{
+			return true;
+		}
+		else
+		{
+			throw new Exception("New table couldn't be created: ".$tablePath);
+		}
 	}	
 	
 }
@@ -147,18 +173,27 @@ class JsonDB {
 	
 	public function __construct($path) {
 		if (is_dir($path)) $this->path = $path;
-		else throw new Exception("JsonDB Error: Path not found");
+		else throw new Exception("JsonDB Error: Database not found");
 	}
 	
-	protected function getTableInstance($table) {
+	protected function getTableInstance($table, $create) {
 		if (isset($tables[$table])) return $tables[$table];
-		else return $tables[$table] = new JsonTable($this->path.$table);
+		else return $tables[$table] = new JsonTable($this->path.$table, $create);
 	}
 	
 	public function __call($op, $args) {
 		if ($args && method_exists("JsonTable", $op)) {
 			$table = $args[0].$this->fileExt;
-			return $this->getTableInstance($table)->$op($args);
+			$create = false;
+			if($op == "createTable")
+			{
+				return $this->getTableInstance($table, true);
+			}
+			elseif($op == "insert" && isset($args[2]) && $args[2] === true)
+			{
+				$create = true;
+			}
+			return $this->getTableInstance($table, $create)->$op($args);
 		} else throw new Exception("JsonDB Error: Unknown method or wrong arguments ");
 	}
 	
