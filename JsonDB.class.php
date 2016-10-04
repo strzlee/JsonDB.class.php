@@ -168,10 +168,4 @@ class JsonDB {
 			return $this->getTableInstance($table)->$op($args);
 		} else throw new Exception("JsonDB Error: Unknown method or wrong arguments ");
 	}
-	
-	public function setExtension($_fileExt) {
-		$this->fileExt = $_fileExt;
-		return $this;
-	}
-	
 }
