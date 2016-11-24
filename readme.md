@@ -1,5 +1,5 @@
 This is a fork of Straussn's JSON-Databaseclass.
-- Added createTable() method for creating new tables (.json files)
+- Added createTable() method for creating new tables (.json.php files)
 - Added optional table creation on insert() method, if table doesn't exist.
 
 Use it like this:
