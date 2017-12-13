@@ -62,13 +62,13 @@ class JsonTable {
 	}
 	
 	protected function lockFile() {
-		$handle = fopen($this->jsonFile, "w");
+		$handle = fopen($this->jsonFile, "c");
 		if (flock($handle, LOCK_EX)) $this->fileHandle = $handle;
 		else throw new Exception("JsonTable Error: Can't set file-lock");
 	}
 	
 	protected function save() {
-		if (fwrite($this->fileHandle, json_encode($this->fileData))) return true;
+		if (ftruncate($this->fileHandle, 0) && fwrite($this->fileHandle, json_encode($this->fileData))) return true;
 		else throw new Exception("JsonTable Error: Can't write data to: ".$this->jsonFile);
 	}
 	
