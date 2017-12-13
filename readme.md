@@ -1,5 +1,5 @@
 This is a fork of Straussn's JSON-Databaseclass.
-- Added createTable() method for creating new tables (.json files)
+- Added createTable() method for creating new tables (.json.php files)
 - Added optional table creation on insert() method, if table doesn't exist.
 
 Use it like this:
@@ -10,7 +10,7 @@ Use it like this:
     
     $db->insert("my_new__new_table", array("newkey2" => "newvalue2"), true);
 
-    $my_another_new_table = new JsonTable("./string_statuses/demo14.json", true);
+    $my_another_new_table = new JsonTable("./string_statuses/demo14.json.php", true);
     $my_another_new_table->insert(array("newkey2" => "newvalue2"));
 
 
@@ -44,9 +44,6 @@ Use it like this:
 [1]=> array(3) { ["ID"]=> int(3) ["Name"]=> string(15) "Gerald Ofnsacka" ["Age"]=> int(43) }    
 }
 
-
-If you use a different file extension as ".json", set them via "JsonDB -> setExtension ('.example')"
-
 ----------
 
 
@@ -70,7 +67,7 @@ If you use a different file extension as ".json", set them via "JsonDB -> setExt
 ----------
 If you use only one json file to store data, you can also use the "JsonTable" Class:
 
-	$db = new JsonTable("./data/test.json"); //parameter => your json file
+	$db = new JsonTable("./data/test.json.php"); //parameter => your json file
 	
 	$result = $db -> selectAll();
 	
